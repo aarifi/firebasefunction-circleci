@@ -3,66 +3,33 @@ jobs:
   build:
     working_directory: ~/mern-starter
     docker:
-      -
-        image: 'circleci/node:8.11.3'
-      -
-        image: 'mongo:3.4.4'
+      - image: circleci/node:4.8.2
+      - image: mongo:3.4.4
     steps:
       - checkout
-      -
-        run:
+      - run:
           name: update-npm
           command: 'sudo npm install -g npm@5'
-      -
-        restore_cache:
-          key: 'dependency-cache-{{ checksum "package.json" }}'
-      -
-        run:
+      - restore_cache:
+          key: dependency-cache-{{ checksum "package.json" }}
+      - run:
           name: install-npm-wee
-          command: 'npm install'
-      -
-        save_cache:
-          key: 'dependency-cache-{{ checksum "package.json" }}'
+          command: npm install
+      - save_cache:
+          key: dependency-cache-{{ checksum "package.json" }}
           paths:
             - ./node_modules
-      -
-        run:
+      - run:
           name: test
-          command: 'npm test'
-      -
-        run:
+          command: npm test
+      - run:
           name: code-coverage
           command: './node_modules/.bin/nyc report --reporter=text-lcov'
-      -
-        store_artifacts:
+      - store_artifacts:
           path: test-results.xml
           prefix: tests
-      -
-        store_artifacts:
+      - store_artifacts:
           path: coverage
           prefix: coverage
-      -
-        store_test_results:
+      - store_test_results:
           path: test-results.xml
-    deploy-job:
-      docker:
-        -
-          image: my-image-version-tag
-      working_directory: /tmp/my-project
-      steps:
-        -
-          run:
-            name: 'Deploy Master to Firebase'
-            command: './node_modules/.bin/firebase deploy --token=$FIREBASE_DEPLOY_TOKEN'
-    workflows:
-      version: 2
-      '-deploy':
-        jobs:
-          - build-job
-          -
-            deploy-job:
-              requires:
-                - build-job
-              filters:
-                branches:
-                  only: master
