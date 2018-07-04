@@ -19,6 +19,9 @@ jobs:
           key: dependency-cache-{{ checksum "package.json" }}
           paths:
             - ./node_modules
+      test:
+        override:
+         - true
       - run:
           name: code-coverage
           command: './node_modules/.bin/nyc report --reporter=text-lcov'
