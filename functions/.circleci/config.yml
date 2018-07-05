@@ -21,7 +21,7 @@ jobs: # a collection of steps
             - ./node_modules
         test:
            override:
-    -       "true"
+    -       "false"
       - run: # run coverage report
           name: code-coverage
           command: './node_modules/.bin/nyc report --reporter=text-lcov'
